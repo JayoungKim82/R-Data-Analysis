@@ -180,3 +180,30 @@ dat.base4.1$CA19.9 <- replace(dat.base4$CA19.9, dat.base4.1$CA19.9=="<1.0",1)
 dat.base4.1
 dat.dplyr4 <- dat.dplyr3 %>% mutate(CA19.9=replace(CA19.9,CA19.9=="<1.0",1))
 dat.dplyr4
+
+dat.base5 <- dat.base4
+dat.base5$age50 <- ifelse(dat.base5$age>=50, 1, 0)
+dat.base5
+
+dat.dplyr5 <- dat.dplyr4 %>% mutate(age50=ifelse(age>=50,1,0))
+dat.dplyr5
+
+dat.base5$age.grp <- cut(dat.base5$age, breaks = c(0,50,60,70,Inf))
+dat.base5
+
+dat.dplyr6 <- dat.dplyr5 %>% mutate(age.grp=cut(age,breaks = c(0,50,60,70,Inf)))
+dat.dplyr6                                            
+summary(dat.dplyr6)
+
+dat.base5$CA19.9 <- as.double(dat.base4$CA19.9)
+dat.dplyr7 <- dat.dplyr6 %>% mutate(CA19.9=as.double(CA19.9))
+summary(dat.dplyr7)
+
+dat.base5$sex <- as.factor(dat.base5$sex)
+dat.base5$TX <- as.factor(dat.base5$TX)
+dat.base5$Stage <- as.factor(dat.base5$Stage)
+dat.base5$age.grp <- as.factor(dat.base5$age.grp)
+summary(dat.base5)
+
+dat.dplyr8 <- dat.dplyr7 %>% mutate_at(vars(sex,TX,Stage,age50),as.factor)
+summary(dat.dplyr8)
