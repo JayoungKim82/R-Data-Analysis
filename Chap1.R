@@ -106,3 +106,11 @@ dat2 <- read_excel("patients_2sheets.xlsx", sheet = "subset", col_names = FALSE)
 dat3 <- read_excel("patients_2sheets.xlsx", sheet="subset", col_names = c("id","age","sex","treatment","CA19.9","CRP","Stage","complication"))
 dat2
 dat3
+dat4 <- read.csv("patients.csv")
+dat5 <- read.table("patients_tab.txt", header=T)
+dat4
+dat5
+write.csv(dat3,"subset_data.csv")
+write.table(dat3,"subset_data.txt")
+save(dat3,file="subset_data.RData")
+load("subset_data.RData")
