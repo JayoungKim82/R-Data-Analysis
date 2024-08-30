@@ -1,0 +1,59 @@
+getwd()
+setwd("E:\\자영 요청함\\자영공부\\R")
+exer_anova <- read.csv("PJHSPSS exe_OneWayANOVA.csv")
+exer_anova_df <- as.data.frame(exer_anova)
+
+#변수명 변경
+#install.packages("tidyverse")
+library("tidyverse")
+df00 <- exer_anova_df %>% rename(test=시험종류, cost = 연평균_학원비)
+
+# Step 1 정규성 가정 확인
+# 귀무가설 : 표본의 모집단은 정규분포이다. 
+# 대립가설 : 표본의 모집단은 정규분포를 이루고 있지 않다
+shapiro.test(subset(df00, test==1)$cost) 
+shapiro.test(subset(df00, test==2)$cost) 
+shapiro.test(subset(df00, test==3)$cost) 
+
+# 유의수준 95% 신뢰구간에서 유의확률 p값은 0.05보다 크므로 귀무가설을 기각 못한다.
+# 그러므로 표본의 모집단은 정규분포를 이루고 있다고 볼 수 있다.
+
+# Step 2 등분산성 가정 확인
+# 귀무가설 : 모든 집단의 분산은 차이가 없다.
+# 대립가설 : 적어서 하나 이상의 집단의 분산에 차이가 있다.
+# install.packages("lawstat")
+library(lawstat)
+levene.test(df00$cost, df00$test, location = "mean")
+
+# 유의수준 95% 신뢰구간에서 유의확률 p값은 0.05보다 크므로 귀무가설을 기각 못한다.
+# 그러므로 표본의 모집단의 분산은 차이가 없다.
+
+# Step 3 독립성 가정 확인
+# 귀무가설 : 시험별로 연간 교육비에는 유의한 차이가 없다.
+# 대립가설 : 시험별로 연간 교육비에는 유의한 차이가 있다.
+
+model_fin <- aov(cost~test, data=df00)
+summary(model_fin)
+
+# 유의수준 95% 신뢰구간에서 유의확률 p값은 0.05보다 작기 때문에 귀무가설을 기각한다.
+# 그러므로 시험별로 연간 교육비에는 유의한 차이가 있다.
+
+# Step 4 사후분석
+# install.packages("agricolae")
+library(agricolae)
+scheffe.test(model_fin, "test", alpha = 0.05, console = T)
+
+# 수능시험 준비할 때의 연간 교육비가 유의하게 가장 높고, 그 다음에 내신, 마지막이 논술.
+
+# boxplot
+boxplot(df00$cost~df00$test, main ='시험별 연간교육비',xlab = '시험', ylab = '연간교육비', names=c('내신','수능','논술'))
+
+# ggplot
+# install.packages('ggplot2')
+library(ggplot2)
+df00$test <- as.factor(df00$test)
+ggplot(df00, aes(x=test, y=cost))+
+  geom_boxplot()+ 
+  scale_x_discrete(labels=c('내신','수능','논술'))+
+  ggtitle('연간교육비')+
+  theme(plot.title = element_text(hjust = 0.5))
