@@ -1,0 +1,13 @@
+#install.packages("tidyverse")
+library(tidyverse)
+#install.packages("forecast")
+library(forecast)
+set.seed(123456)
+nn=52*4
+wn = ts(rnorm(nn), start=1970, frequency = 4)
+plot(wn, main="", xlab="", ylab="백색잡음", col="steelblue")
+abline(h=0, lty=2, col="gray")
+acf(wn, main="", col="steelblue", xlab="")
+pacf(wn, main="", col="steelblue", xlab="")
+Box.test(wn, lag=8, type="Ljung")
+wn %>% ggtsdisplay(main="", theme=theme_bw())
